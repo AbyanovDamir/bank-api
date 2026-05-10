@@ -165,7 +165,7 @@ sudo chmod +x test_new_endpoints.sh
 sudo ./test_new_endpoints.sh
 
 # Проверка MailHog
-sudo chmod test_email_direct.sh
+sudo chmod +x test_email_direct.sh
 sudo ./test_email_direct.sh
 
 ```
