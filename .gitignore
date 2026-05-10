@@ -1,0 +1,57 @@
+# Environment files (СОДЕРЖАТ СЕКРЕТЫ!)
+.env
+.env.local
+.env.*.local
+
+# Binaries
+/bin
+/dist
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+bank-api
+*.test
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Database
+*.db
+*.sqlite
+
+# Certificates
+*.pem
+*.key
+*.crt
+
+# Coverage
+*.out
+coverage.html
+coverage.txt
+
+# Dependency directories
+vendor/
+
+# Build artifacts
+tmp/
+temp/
+bank-files/
+backups/
+
+# PGP keys
+*.key
+*.gpg

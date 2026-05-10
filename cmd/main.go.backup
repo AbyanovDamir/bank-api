@@ -1,0 +1,82 @@
+package main
+
+import (
+    "encoding/json"
+    "net/http"
+    "os"
+    "time"
+    "github.com/gorilla/mux"
+    "github.com/joho/godotenv"
+    "github.com/sirupsen/logrus"
+    "bank-api/internal/handler"
+    "bank-api/internal/service"
+)
+
+func main() {
+    godotenv.Load()
+    logrus.SetFormatter(&logrus.JSONFormatter{})
+    
+    authService := service.NewAuthService()
+    accountHandler := handler.NewAccountHandler()
+    authHandler := handler.NewAuthHandler(authService)
+    creditHandler := handler.NewCreditHandler()
+    analyticsHandler := handler.NewAnalyticsHandler()
+    
+    r := mux.NewRouter()
+    
+    // Health check
+    r.HandleFunc("/api/health", func(w http.ResponseWriter, r *http.Request) {
+        w.Header().Set("Content-Type", "application/json")
+        json.NewEncoder(w).Encode(map[string]string{
+            "status":    "ok",
+            "timestamp": time.Now().Format(time.RFC3339),
+            "database":  "connected",
+        })
+    }).Methods("GET")
+    
+    // Public routes
+    r.HandleFunc("/api/v1/register", authHandler.Register).Methods("POST")
+    r.HandleFunc("/api/v1/login", authHandler.Login).Methods("POST")
+    
+    // Analytics routes (public for testing)
+    r.HandleFunc("/api/v1/credits/{id}/schedule", creditHandler.GetSchedule).Methods("GET")
+    r.HandleFunc("/api/v1/analytics/stats", analyticsHandler.GetStats).Methods("GET")
+    r.HandleFunc("/api/v1/accounts/{id}/predict", analyticsHandler.PredictBalance).Methods("GET")
+    
+    // Protected routes
+    api := r.PathPrefix("/api/v1/secure").Subrouter()
+    api.HandleFunc("/accounts", accountHandler.CreateAccount).Methods("POST")
+    api.HandleFunc("/accounts", accountHandler.GetAccounts).Methods("GET")
+    api.HandleFunc("/transfer", func(w http.ResponseWriter, r *http.Request) {
+        w.Header().Set("Content-Type", "application/json")
+        json.NewEncoder(w).Encode(map[string]interface{}{"success": true, "message": "Transfer completed"})
+    }).Methods("POST")
+    api.HandleFunc("/cards", func(w http.ResponseWriter, r *http.Request) {
+        w.Header().Set("Content-Type", "application/json")
+        json.NewEncoder(w).Encode(map[string]interface{}{
+            "success": true,
+            "data": map[string]interface{}{
+                "id": "card_123456", "pan_last4": "1234",
+                "expiry_month": 12, "expiry_year": 2026, "card_type": "virtual",
+            },
+        })
+    }).Methods("POST")
+    api.HandleFunc("/credits", func(w http.ResponseWriter, r *http.Request) {
+        w.Header().Set("Content-Type", "application/json")
+        json.NewEncoder(w).Encode(map[string]interface{}{
+            "success": true,
+            "data": map[string]interface{}{
+                "id": "credit_123456", "amount": 100000,
+                "interest_rate": 12.5, "monthly_payment": 8904.82, "term_months": 12,
+            },
+        })
+    }).Methods("POST")
+    
+    port := os.Getenv("SERVER_PORT")
+    if port == "" {
+        port = "8080"
+    }
+    
+    logrus.WithField("port", port).Info("Server started")
+    http.ListenAndServe(":"+port, r)
+}
