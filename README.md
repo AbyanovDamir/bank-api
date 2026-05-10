@@ -148,19 +148,25 @@ docker compose up -d --build
 
 ```bash
 # Универсальный тест (рекомендуется)
-./test_all.sh
+sudo chmod +x test_all.sh
+sudo ./test_all.sh
 
 # Быстрая проверка
-./quick_test.sh
+sudo chmod +x quick_test.sh
+sudo ./quick_test.sh
+
 
 # Тест email уведомлений
-./test_email.sh
+sudo chmod +x test_email.sh
+sudo ./test_email.sh
 
 # Тест новых эндпоинтов
-./test_new_endpoints.sh
+sudo chmod +x test_new_endpoints.sh
+sudo ./test_new_endpoints.sh
 
 # Проверка MailHog
-./test_email_direct.sh
+sudo chmod test_email_direct.sh
+sudo ./test_email_direct.sh
 
 ```
 
