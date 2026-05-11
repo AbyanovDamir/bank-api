@@ -208,6 +208,15 @@ docker compose logs app --tail=50
 docker stats
 
 ```
+### Docker-команды 
+```bash
+docker compose ps                         # список контейнеров
+docker compose logs -f app                # логи API
+docker compose logs mailhog --tail=50     # логи MailHog
+docker compose exec app sh                # войти в контейнер API
+docker compose exec postgres psql -U postgres -d bankdb  # PSQL
+```
+
 ### Все команды Make
 
 ```bash
